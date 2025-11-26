@@ -11,7 +11,8 @@
  * Definitions
  ******************************************************************************/
 /*${macro:start}*/
-
+#define BOARD_LED_GPIO     BOARD_LED_GREEN_GPIO
+#define BOARD_LED_GPIO_PIN BOARD_LED_GREEN_GPIO_PIN
 /*${macro:end}*/
 
 /*******************************************************************************

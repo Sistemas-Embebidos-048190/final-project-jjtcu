@@ -19,16 +19,15 @@
 #include "app.h"
 
 #include "Platform_Types.h"
+#include "IoHwAb_gpio.h"
+#include "IoHwAb_adc.h"
+#include "IoHwAb_pwm.h"
+#include "Rte_OS.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-/* Task priorities. */
-#define hello_task_PRIORITY (configMAX_PRIORITIES - 1)
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-static void hello_task(void *pvParameters);
+
 
 /*******************************************************************************
  * Code
@@ -40,26 +39,69 @@ int main(void)
 {
     /* Init board hardware. */
     BOARD_InitHardware();
-    if (xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 100, NULL, hello_task_PRIORITY, NULL) !=
-        pdPASS)
-    {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-            ;
-    }
-    vTaskStartScheduler();
-    for (;;)
-        ;
+	Init_Gear_Selection_Pins();
+	Init_Brake_Pedal_Pins();
+	Init_Shifter_Output_Pins();
+	//Init_Pressure_Solenoids_Pwm();
+	Init_ADC_Pins();
+	TCM_LPADC_InitSensors();
+	//Rte_Init_Task();
+	while(1){
+
+		Gear_Selection_GetPosition();
+		Brake_Pedal_Read();
+
+		//g_PWM_LinePressure = 50;
+		//g_PWM_TCC = 50;
+
+		//LinePressure_SetDuty();
+		//TCCPressure_SetDuty();
+
+		TCM_Read_OutputSpeedSensorRaw();
+		//TCM_Read_FluidTempSensorRaw();
+		//TCM_Read_TurbineSpeedSensorRaw();
+
+		/*if(g_IO_Gear_Lever_Position==1){
+			g_SOL_ShiftLock = 1;
+			Set_Shift_Lock_Sol();}
+		else{
+			g_SOL_ShiftLock = 0;
+			Set_Shift_Lock_Sol();}
+
+		if(g_IO_Gear_Lever_Position==2){
+			g_SOL_ClutchA = 1;
+			Set_Shift_Sol_A();}
+		else{
+			g_SOL_ClutchA = 0;
+			Set_Shift_Sol_A();}
+
+		if(g_IO_Gear_Lever_Position==3){
+			g_SOL_ClutchB = 1;
+			Set_Shift_Sol_B();}
+		else{
+			g_SOL_ClutchB = 0;
+			Set_Shift_Sol_B();}
+
+
+		if(g_IO_Gear_Lever_Position==4){
+			g_SOL_ClutchC = 1;
+			Set_Shift_Sol_C();}
+		else{
+			g_SOL_ClutchC = 0;
+			Set_Shift_Sol_C();}
+
+
+		if(g_IO_Gear_Lever_Position==5){
+			g_SOL_ClutchD = 1;
+			Set_Shift_Sol_D();}
+		else{
+			g_SOL_ClutchD = 0;
+			Set_Shift_Sol_D();}*/
+	}
+
 }
 
 /*!
  * @brief Task responsible for printing of "Hello world." message.
  */
-static void hello_task(void *pvParameters)
-{
-    for (;;)
-    {
-        PRINTF("Hello world.\r\n");
-        vTaskSuspend(NULL);
-    }
-}
+

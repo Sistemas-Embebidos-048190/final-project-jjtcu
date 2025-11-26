@@ -636,7 +636,7 @@ void LPADC_GetDefaultConvCommandConfig(lpadc_conv_command_config_t *config)
 #if defined(FSL_FEATURE_LPADC_HAS_CMDL_ALTB_CSCALE) && FSL_FEATURE_LPADC_HAS_CMDL_ALTB_CSCALE
     config->channelBScaleMode = kLPADC_SampleFullScale;
 #endif /* FSL_FEATURE_LPADC_HAS_CMDL_ALTB_CSCALE */
-    config->sampleChannelMode = kLPADC_SampleChannelSingleEndSideA;
+    config->sampleChannelMode = kLPADC_SampleChannelSingleEndSideB;
     config->channelNumber     = 0U;
 #if defined(FSL_FEATURE_LPADC_HAS_CMDL_ALTB_ADCH) && FSL_FEATURE_LPADC_HAS_CMDL_ALTB_ADCH
     config->channelBNumber = 0U;
