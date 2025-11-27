@@ -1,0 +1,88 @@
+%implements "chartSource" "C"
+%function ChartConfig(block, system) void
+  %createrecord chartConfiguration { ...
+          executeAtInitialization  0 ...
+  }
+  %return chartConfiguration
+%endfunction
+%function ChartDataMap(block, system) void
+  %createrecord ChartDataElements {\
+    NumChartData   10 \
+    ChartDataDefaults {\
+      RecordType   "ChartData"\
+      Dimensions   []\
+      IsTestPoint  0\
+    }\
+    ChartData {\
+      Name         "D"\
+      Description  "ChartLocal"\
+      SFName       ""\
+      Path         "D"\
+      SrcLocation  ""\
+    }\
+    ChartData {\
+      Name         "Current_Gear_State"\
+      Description  "ChartLocal"\
+      SFName       ""\
+      Path         "Current_Gear_State"\
+      SrcLocation  ""\
+    }\
+    ChartData {\
+      Name         "is_active_c1_TCU_GS"\
+      Description  "StateIsActive"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  ""\
+    }\
+    ChartData {\
+      Name         "is_c1_TCU_GS"\
+      Description  "StateActiveChild"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  ""\
+    }\
+    ChartData {\
+      Name         "is_Gear_Selection"\
+      Description  "StateActiveChild"\
+      SFName       ""\
+      Path         "Gear_Selection"\
+      SrcLocation  ""\
+    }\
+    ChartData {\
+      Name         "is_Selection"\
+      Description  "StateActiveChild"\
+      SFName       ""\
+      Path         "Selection"\
+      SrcLocation  ""\
+    }\
+    ChartData {\
+      Name         "styleState"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "TCU_GS:21:138:576-586"\
+    }\
+    ChartData {\
+      Name         "prevSpeed"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "TCU_GS:21:138:587-596"\
+    }\
+    ChartData {\
+      Name         "initialized_not_empty"\
+      Description  "EmlPersistentSentinel"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "TCU_GS:21:138:597-608"\
+    }\
+    ChartData {\
+      Name         "temporalCounter_i1"\
+      Description  "TemporalCounter"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  ""\
+    }\
+  }
+  %return ChartDataElements
+%endfunction
