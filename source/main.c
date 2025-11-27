@@ -42,22 +42,29 @@ int main(void)
 	Init_Gear_Selection_Pins();
 	Init_Brake_Pedal_Pins();
 	Init_Shifter_Output_Pins();
-	//Init_Pressure_Solenoids_Pwm();
+	//Init_PWM_P2_6(50);
+//	Init_Pressure_Solenoids_Pwm();
 	Init_ADC_Pins();
-	TCM_LPADC_InitSensors();
+	//TCM_LPADC_InitSensors();
+
+	Pin_init_PWM();
+
 	//Rte_Init_Task();
 	while(1){
 
 		Gear_Selection_GetPosition();
 		Brake_Pedal_Read();
 
-		//g_PWM_LinePressure = 50;
-		//g_PWM_TCC = 50;
 
-		//LinePressure_SetDuty();
-		//TCCPressure_SetDuty();
 
-		TCM_Read_OutputSpeedSensorRaw();
+		g_PWM_LinePressure = 30;
+		g_PWM_TCC = 20;
+
+		LinePressure_SetDuty();
+		TCCPressure_SetDuty();
+
+
+		//TCM_Read_OutputSpeedSensorRaw();
 		//TCM_Read_FluidTempSensorRaw();
 		//TCM_Read_TurbineSpeedSensorRaw();
 

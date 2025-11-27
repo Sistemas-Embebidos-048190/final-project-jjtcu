@@ -13,6 +13,11 @@
 /*${macro:start}*/
 #define BOARD_LED_GPIO     BOARD_LED_GREEN_GPIO
 #define BOARD_LED_GPIO_PIN BOARD_LED_GREEN_GPIO_PIN
+
+#define BOARD_PWM_BASEADDR        PWM1
+#define PWM_SRC_CLK_FREQ          CLOCK_GetFreq(kCLOCK_BusClk)
+#define DEMO_PWM_FAULT_LEVEL      true
+#define APP_DEFAULT_PWM_FREQUENCY (10000UL)
 /*${macro:end}*/
 
 /*******************************************************************************
