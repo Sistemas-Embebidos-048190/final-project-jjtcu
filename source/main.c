@@ -42,10 +42,8 @@ int main(void)
 	Init_Gear_Selection_Pins();
 	Init_Brake_Pedal_Pins();
 	Init_Shifter_Output_Pins();
-	//Init_PWM_P2_6(50);
-//	Init_Pressure_Solenoids_Pwm();
 	Init_ADC_Pins();
-	//TCM_LPADC_InitSensors();
+	TCM_LPADC_InitSensors();
 
 	Pin_init_PWM();
 
@@ -57,16 +55,16 @@ int main(void)
 
 
 
-		g_PWM_LinePressure = 30;
-		g_PWM_TCC = 20;
+//		g_PWM_LinePressure = 30;
+//		g_PWM_TCC = 20;
+//
+//		LinePressure_SetDuty();
+//		TCCPressure_SetDuty();
 
-		LinePressure_SetDuty();
-		TCCPressure_SetDuty();
 
-
-		//TCM_Read_OutputSpeedSensorRaw();
-		//TCM_Read_FluidTempSensorRaw();
-		//TCM_Read_TurbineSpeedSensorRaw();
+		TCM_Read_OutputSpeedSensor();
+		TCM_Read_FluidTempSensor();
+		TCM_Read_TurbineSpeedSensor();
 
 		/*if(g_IO_Gear_Lever_Position==1){
 			g_SOL_ShiftLock = 1;

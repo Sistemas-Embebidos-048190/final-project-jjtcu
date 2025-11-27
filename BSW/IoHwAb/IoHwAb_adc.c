@@ -114,13 +114,13 @@ void TCM_LPADC_InitSensors(void)
     trigConfig.targetCommandId = TCM_LPADC_CMDID_OUTPUT;
     trigConfig.enableHardwareTrigger = false;  // puro software trigger
 
-    //trigConfig.targetCommandId = TCM_LPADC_CMDID_OUTPUT;
+    trigConfig.targetCommandId = TCM_LPADC_CMDID_OUTPUT;
     LPADC_SetConvTriggerConfig(TCM_LPADC_BASE, TCM_LPADC_TRIG_OUTPUT, &trigConfig);
 
-    //trigConfig.targetCommandId = TCM_LPADC_CMDID_FLUID;
+    trigConfig.targetCommandId = TCM_LPADC_CMDID_FLUID;
     LPADC_SetConvTriggerConfig(TCM_LPADC_BASE, TCM_LPADC_TRIG_FLUID, &trigConfig);
 
-    ///trigConfig.targetCommandId = TCM_LPADC_CMDID_TURBINE;
+    trigConfig.targetCommandId = TCM_LPADC_CMDID_TURBINE;
     LPADC_SetConvTriggerConfig(TCM_LPADC_BASE, TCM_LPADC_TRIG_TURBINE, &trigConfig);
 
     /* Encender el ADC (igual que en muchos ejemplos) */
@@ -130,10 +130,10 @@ void TCM_LPADC_InitSensors(void)
 
 
 
-void TCM_Read_OutputSpeedSensorRaw(void)
+void TCM_Read_OutputSpeedSensor(void)
 {
 	lpadc_conv_result_t result;
-	uint32 triggerMask = (1UL << 0);
+	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_OUTPUT);
 	const uint32_t g_LpadcResultShift = 3U;
 
 	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
@@ -141,13 +141,17 @@ void TCM_Read_OutputSpeedSensorRaw(void)
 	while (!LPADC_GetConvResult(TCM_LPADC_BASE, &result, 0U))
 	{
 	}
-	Write_TCM_OutputSpeed_OSS( (result.convValue) >> g_LpadcResultShift  );
+
+	uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * 8000U;   // evitar overflow
+	uint16 rpm  = (uint16)(temp / 4095U);
+
+	Write_TCM_OutputSpeed_OSS( rpm );
 }
 
-void TCM_Read_FluidTempSensorRaw(void)
+void TCM_Read_FluidTempSensor(void)
 {
 	lpadc_conv_result_t result;
-	uint32 triggerMask = (1UL << 0);
+	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_FLUID);
 	const uint32_t g_LpadcResultShift = 3U;
 
 	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
@@ -155,12 +159,30 @@ void TCM_Read_FluidTempSensorRaw(void)
 	while (!LPADC_GetConvResult(TCM_LPADC_BASE, &result, 0U))
 	{
 	}
-	Write_TCM_FluidTemp_TFT( (result.convValue) >> g_LpadcResultShift );
+
+	sint32 temp = (sint32)((result.convValue) >> g_LpadcResultShift) * 190;  // span = 190 °C
+	temp /= 4095;                        // ahora está en [0, 190]
+	temp += -40;                         // desplazar a [-40, 150]
+
+	Write_TCM_FluidTemp_TFT( temp );
 }
 
-void TCM_Read_TurbineSpeedSensorRaw(void)
+void TCM_Read_TurbineSpeedSensor(void)
 {
-	Write_TCM_TurbineSpeed_TSS (TCM_LPADC_ReadByTrigger(TCM_LPADC_TRIG_TURBINE) );
+	lpadc_conv_result_t result;
+	uint32 triggerMask = (1UL << TCM_LPADC_TRIG_TURBINE);
+	const uint32_t g_LpadcResultShift = 3U;
+
+	LPADC_DoSoftwareTrigger(TCM_LPADC_BASE, triggerMask);
+
+	while (!LPADC_GetConvResult(TCM_LPADC_BASE, &result, 0U))
+	{
+	}
+	uint32 temp = (uint32)((result.convValue) >> g_LpadcResultShift) * 8000U;   // evitar overflow
+	uint16 rpm  = (uint16)(temp / 4095U);
+
+
+	Write_TCM_TurbineSpeed_TSS( rpm );
 }
 
 

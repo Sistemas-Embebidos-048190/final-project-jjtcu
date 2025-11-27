@@ -16,14 +16,9 @@ void Init_ADC_Pins(void);
 void TCM_LPADC_InitSensors(void);
 
 /* Lecturas de sensores (valor crudo ADC 12 bits) */
-void TCM_Read_OutputSpeedSensorRaw(void);
-void TCM_Read_FluidTempSensorRaw(void);
-void TCM_Read_TurbineSpeedSensorRaw(void);
-
-/* Helper para lectura ADC (opcional, pero útil si quieres usar triggers manualmente) */
-uint16 TCM_LPADC_ReadByTrigger(uint32 triggerIndex);
-
-
+void TCM_Read_OutputSpeedSensor(void);
+void TCM_Read_FluidTempSensor(void);
+void TCM_Read_TurbineSpeedSensor(void);
 
 
 
