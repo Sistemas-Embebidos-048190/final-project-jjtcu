@@ -47,7 +47,7 @@ int main(void)
 
 	Pin_init_PWM();
 
-	//Rte_Init_Task();
+	Rte_Init_Task();
 	while(1){
 
 		Gear_Selection_GetPosition();
