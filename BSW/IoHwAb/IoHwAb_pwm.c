@@ -188,7 +188,7 @@ void PWM_InitPins(void)
 }
 void LinePressure_SetDuty(void)
 {
-    uint16 duty = 0;
+    uint32 duty = 0;
 
     Read_PWM_LinePressure(&duty);
     if (duty > 100) duty = 100;
@@ -201,7 +201,7 @@ void LinePressure_SetDuty(void)
 
 void TCCPressure_SetDuty(void)
 {
-    uint16 duty = 0;
+    uint32 duty = 0;
 
     Read_PWM_TCC(&duty);
     if (duty > 100) duty = 100;

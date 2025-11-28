@@ -42,6 +42,16 @@
 #define TCU_Final_IN_segunda           ((uint8_T)6U)
 #define TCU_Final_IN_tercera           ((uint8_T)7U)
 
+static double fmax(double a, double b)
+{
+    return (a > b) ? a : b;
+}
+
+static double fmin(double a, double b)
+{
+    return (a < b) ? a : b;
+}
+
 /* Forward declaration for local functions */
 static real_T TCU_Final_UpdateDriveStyle(real_T Engine_RPM, real_T VehSpeed_kph,
   real_T Throttle_pct, DW_Gear_Selection_TCU_Final_T *localDW);

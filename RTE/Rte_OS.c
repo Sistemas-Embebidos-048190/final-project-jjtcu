@@ -1,5 +1,6 @@
 
 #include "Rte_OS.h"
+#include "TCU_Final.h"
 
 /* Task priorities. */
 #define Comm_Tx_Task_PRIORITY (configMAX_PRIORITIES - 1)
@@ -40,6 +41,32 @@ void Rte_Init_Task(void){
 
 	if (xTaskCreate(TCM_logic_Task, "TCM_logic_Task", configMINIMAL_STACK_SIZE + 100, NULL, TCM_logic_Task_PRIORITY, NULL) != pdPASS)
 		{
+		// CONEXIONES
+		//TCU_Final_U.Ignition =
+		Read_IO_Gear_Lever_Position( (uint32*)&TCU_Final_U.Gear_Level_Position);
+		Read_CAN_EngineRPM( (uint32*)&TCU_Final_U.Engine_RPM);
+		Read_CAN_VehicleSpeedRef( (uint32*)&TCU_Final_U.Vehicle_Speed_Reference);
+		Read_CAN_ThrottlePosition( (uint32*)&TCU_Final_U.Throttle_Position_Sensor);
+		Read_IO_BrakeLightSwitch( (uint32*)&TCU_Final_U.Brake_Pedal_Switch);
+		Read_CAN_DriverModeSelection( (uint32*)&TCU_Final_U.Driver_Mode_Selection);
+		Read_TCM_FluidTemp_TFT( (uint32*)&TCU_Final_U.Transmission_Fluid_Temp);
+		Read_CAN_EngineTorqueActual( (uint32*)&TCU_Final_U.Engine_Torque_Actual);
+		Read_TCM_OutputSpeed_OSS( (uint32*)&TCU_Final_U.Output_Speed_Sensor);
+
+		Write_SOL_ShiftLock( TCU_Final_Y.Shift_Solenoid_Park);
+		//&TCU_Final_Y.Shift_Solenoid_Reverse);
+		//&TCU_Final_Y.Shift_Solenoid_Neutral);
+		Write_SOL_ClutchA( TCU_Final_Y.Shift_Solenoid_A);
+		Write_SOL_ClutchB( TCU_Final_Y.Shift_Solenoid_B);
+		Write_SOL_ClutchC( TCU_Final_Y.Shift_Solenoid_C);
+		Write_SOL_ClutchD( TCU_Final_Y.Shift_Solenoid_D);
+		Write_CAN_TorqueReductionRequest( TCU_Final_Y.Torque_Reduction_Request);
+		Write_PWM_LinePressure( TCU_Final_Y.Line_Pressure_Control_Solenoid);
+		Write_PWM_TCC( TCU_Final_Y.TCC_Control_Solenoid);
+
+		TCU_Final_step();
+
+
 			PRINTF("Task creation failed!.\r\n");
 			while (1);
 
