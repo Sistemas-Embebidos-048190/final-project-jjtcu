@@ -113,7 +113,6 @@ static void TCM_logic_Task(void *pvParameters){
 
 		TCU_Final_step();
 
-		uint8 TCM_Log=1;
     	vTaskDelay(pdMS_TO_TICKS(100));
 
 	}
@@ -127,7 +126,9 @@ static void TCM_task(void *pvParameters){
 	for (;;)
 	{
 
-		uint8 TCM=1;
+		Init_All_Pins();
+		Update_Pin_Values();
+
     	vTaskDelay(pdMS_TO_TICKS(100));
 
 	}
