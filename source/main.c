@@ -19,16 +19,15 @@
 #include "app.h"
 
 #include "Platform_Types.h"
+#include "IoHwAb_gpio.h"
+#include "IoHwAb_adc.h"
+#include "IoHwAb_pwm.h"
+#include "Rte_OS.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-/* Task priorities. */
-#define hello_task_PRIORITY (configMAX_PRIORITIES - 1)
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-static void hello_task(void *pvParameters);
+
 
 /*******************************************************************************
  * Code
@@ -40,26 +39,19 @@ int main(void)
 {
     /* Init board hardware. */
     BOARD_InitHardware();
-    if (xTaskCreate(hello_task, "Hello_task", configMINIMAL_STACK_SIZE + 100, NULL, hello_task_PRIORITY, NULL) !=
-        pdPASS)
-    {
-        PRINTF("Task creation failed!.\r\n");
-        while (1)
-            ;
-    }
-    vTaskStartScheduler();
-    for (;;)
-        ;
+
+
+	Rte_Init_Task();
+	while(1){
+
+
+
+
+	}
+
 }
 
 /*!
  * @brief Task responsible for printing of "Hello world." message.
  */
-static void hello_task(void *pvParameters)
-{
-    for (;;)
-    {
-        PRINTF("Hello world.\r\n");
-        vTaskSuspend(NULL);
-    }
-}
+
