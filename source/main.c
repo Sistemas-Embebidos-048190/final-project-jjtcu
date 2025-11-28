@@ -39,69 +39,14 @@ int main(void)
 {
     /* Init board hardware. */
     BOARD_InitHardware();
-	Init_Gear_Selection_Pins();
-	Init_Brake_Pedal_Pins();
-	Init_Shifter_Output_Pins();
-	Init_ADC_Pins();
-	TCM_LPADC_InitSensors();
 
-	Pin_init_PWM();
 
 	Rte_Init_Task();
 	while(1){
 
-		Gear_Selection_GetPosition();
-		Brake_Pedal_Read();
 
 
 
-//		g_PWM_LinePressure = 30;
-//		g_PWM_TCC = 20;
-//
-//		LinePressure_SetDuty();
-//		TCCPressure_SetDuty();
-
-
-		TCM_Read_OutputSpeedSensor();
-		TCM_Read_FluidTempSensor();
-		TCM_Read_TurbineSpeedSensor();
-
-		/*if(g_IO_Gear_Lever_Position==1){
-			g_SOL_ShiftLock = 1;
-			Set_Shift_Lock_Sol();}
-		else{
-			g_SOL_ShiftLock = 0;
-			Set_Shift_Lock_Sol();}
-
-		if(g_IO_Gear_Lever_Position==2){
-			g_SOL_ClutchA = 1;
-			Set_Shift_Sol_A();}
-		else{
-			g_SOL_ClutchA = 0;
-			Set_Shift_Sol_A();}
-
-		if(g_IO_Gear_Lever_Position==3){
-			g_SOL_ClutchB = 1;
-			Set_Shift_Sol_B();}
-		else{
-			g_SOL_ClutchB = 0;
-			Set_Shift_Sol_B();}
-
-
-		if(g_IO_Gear_Lever_Position==4){
-			g_SOL_ClutchC = 1;
-			Set_Shift_Sol_C();}
-		else{
-			g_SOL_ClutchC = 0;
-			Set_Shift_Sol_C();}
-
-
-		if(g_IO_Gear_Lever_Position==5){
-			g_SOL_ClutchD = 1;
-			Set_Shift_Sol_D();}
-		else{
-			g_SOL_ClutchD = 0;
-			Set_Shift_Sol_D();}*/
 	}
 
 }
