@@ -208,7 +208,7 @@ void Init_Shifter_Output_Pins(void)
 
 void Set_Shift_Lock_Sol(void)
 {
-    uint8 state = 0;
+    uint32 state = 0;
 
     /* Antes: Read_SOL_ShiftLock_FromHW(state);  (mal por nombre y por puntero) */
     Read_SOL_ShiftLock(&state);
@@ -225,7 +225,7 @@ void Set_Shift_Lock_Sol(void)
 
 void Set_Shift_Sol_A(void)
 {
-    uint8 state = 0;
+    uint32 state = 0;
 
     // Leer del RTE (salida lógica SOL_ClutchA)
     Read_SOL_ClutchA(&state);
@@ -242,7 +242,7 @@ void Set_Shift_Sol_A(void)
 
 void Set_Shift_Sol_B(void)
 {
-    uint8 state = 0;
+    uint32 state = 0;
 
     // Leer del RTE (salida lógica SOL_ClutchB)
     Read_SOL_ClutchB(&state);
@@ -259,7 +259,7 @@ void Set_Shift_Sol_B(void)
 
 void Set_Shift_Sol_C(void)
 {
-    uint8 state = 0;
+    uint32 state = 0;
 
     // Leer del RTE (salida lógica SOL_ClutchC)
     Read_SOL_ClutchC(&state);
@@ -276,7 +276,7 @@ void Set_Shift_Sol_C(void)
 
 void Set_Shift_Sol_D(void)
 {
-    uint8 state = 0;
+    uint32 state = 0;
 
     // Leer del RTE (salida lógica SOL_ClutchD)
     Read_SOL_ClutchD(&state);
