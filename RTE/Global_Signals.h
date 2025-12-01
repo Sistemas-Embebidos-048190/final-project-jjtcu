@@ -6,7 +6,7 @@
 
 typedef enum
 {
-    GEAR_PARKING = 1,  // 0
+    GEAR_PARKING = 1U,  // 0
     GEAR_REVERSE,      // 1
     GEAR_NEUTRAL,      // 2
     GEAR_DRIVE,        // 3

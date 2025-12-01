@@ -71,36 +71,36 @@ gear_selector_t Gear_Selection_GetPosition(void)
 
     if (pinParking)
     {
-        Write_IO_Gear_Lever_Position(GEAR_PARKING);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_PARKING);
     }
     else if (pinReverse)
     {
-        Write_IO_Gear_Lever_Position(GEAR_REVERSE);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_REVERSE);
     }
     else if (pinNeutral)
     {
-        Write_IO_Gear_Lever_Position(GEAR_NEUTRAL);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_NEUTRAL);
     }
     else if (pinDrive)
     {
-        Write_IO_Gear_Lever_Position(GEAR_DRIVE);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_DRIVE);
     }
     else if (pinFirst)
     {
-        Write_IO_Gear_Lever_Position(GEAR_FIRST);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_FIRST);
     }
     else if (pinSecond)
     {
-        Write_IO_Gear_Lever_Position(GEAR_SECOND);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_SECOND);
     }
     else if (pinThird)
     {
-        Write_IO_Gear_Lever_Position(GEAR_THIRD);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_THIRD);
     }
     else
     {
         // Ningún pin activo o estado inválido
-        Write_IO_Gear_Lever_Position(GEAR_INVALID);
+        Write_IO_Gear_Lever_Position((uint32)GEAR_INVALID);
     }
 
 

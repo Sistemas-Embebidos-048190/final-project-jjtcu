@@ -90,7 +90,9 @@ static void TCM_logic_Task(void *pvParameters){
 	{
 		// CONEXIONES
 		TCU_Final_U.Ignition = 2;
-		Read_IO_Gear_Lever_Position( (uint32*)&TCU_Final_U.Gear_Level_Position);
+		uint32 GearLevel_Temp = 0;
+		Read_IO_Gear_Lever_Position( &GearLevel_Temp);
+		TCU_Final_U.Gear_Level_Position = (real_T)GearLevel_Temp;
 		Read_CAN_EngineRPM( (uint32*)&TCU_Final_U.Engine_RPM);
 		Read_CAN_VehicleSpeedRef( (uint32*)&TCU_Final_U.Vehicle_Speed_Reference);
 		Read_CAN_ThrottlePosition( (uint32*)&TCU_Final_U.Throttle_Position_Sensor);
