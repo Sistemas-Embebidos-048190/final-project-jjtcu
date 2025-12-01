@@ -25,6 +25,9 @@ void Update_Pin_Values(void){
 	Set_Shift_Sol_B;
 	Set_Shift_Sol_C;
 	Set_Shift_Sol_D;
+	Set_Shift_Sol_PARKING();
+	Set_Shift_Sol_REVERSE();
+	Set_Shift_Sol_NEUTRAL();
 
 	// ADC
 	// GET

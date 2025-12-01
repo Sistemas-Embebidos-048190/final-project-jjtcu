@@ -27,7 +27,9 @@ void Set_Shift_Sol_A(void);
 void Set_Shift_Sol_B(void);
 void Set_Shift_Sol_C(void);
 void Set_Shift_Sol_D(void);
-
+void Set_Shift_Sol_PARKING(void);
+void Set_Shift_Sol_REVERSE(void);
+void Set_Shift_Sol_NEUTRAL(void);
 
 
 

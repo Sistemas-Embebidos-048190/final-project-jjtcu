@@ -38,12 +38,14 @@
 int main(void)
 {
     /* Init board hardware. */
-    BOARD_InitHardware();
+
+	BOARD_InitHardware();
+
+
 
 
 	Rte_Init_Task();
 	while(1){
-
 
 
 

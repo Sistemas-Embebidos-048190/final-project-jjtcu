@@ -89,7 +89,7 @@ static void TCM_logic_Task(void *pvParameters){
 	for (;;)
 	{
 		// CONEXIONES
-		//TCU_Final_U.Ignition =
+		TCU_Final_U.Ignition = 2;
 		Read_IO_Gear_Lever_Position( (uint32*)&TCU_Final_U.Gear_Level_Position);
 		Read_CAN_EngineRPM( (uint32*)&TCU_Final_U.Engine_RPM);
 		Read_CAN_VehicleSpeedRef( (uint32*)&TCU_Final_U.Vehicle_Speed_Reference);
@@ -100,9 +100,9 @@ static void TCM_logic_Task(void *pvParameters){
 		Read_CAN_EngineTorqueActual( (uint32*)&TCU_Final_U.Engine_Torque_Actual);
 		Read_TCM_OutputSpeed_OSS( (uint32*)&TCU_Final_U.Output_Speed_Sensor);
 
-		Write_SOL_ShiftLock( TCU_Final_Y.Shift_Solenoid_Park);
-		//&TCU_Final_Y.Shift_Solenoid_Reverse);
-		//&TCU_Final_Y.Shift_Solenoid_Neutral);
+		Write_SOL_ClutchParking( TCU_Final_Y.Shift_Solenoid_Park);
+		Write_SOL_ClutchReverse( TCU_Final_Y.Shift_Solenoid_Reverse);
+		Write_SOL_ClutchNeutral( TCU_Final_Y.Shift_Solenoid_Neutral);
 		Write_SOL_ClutchA( TCU_Final_Y.Shift_Solenoid_A);
 		Write_SOL_ClutchB( TCU_Final_Y.Shift_Solenoid_B);
 		Write_SOL_ClutchC( TCU_Final_Y.Shift_Solenoid_C);

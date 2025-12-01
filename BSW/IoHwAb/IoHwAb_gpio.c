@@ -181,6 +181,15 @@ void Init_Shifter_Output_Pins(void)
     /* ----- SHIFT LOCK SOL (P1_12) ----- */
     PORT_SetPinConfig(PORT1, 12U, &output_pin_config);
 
+    /* ----- SHIFT PARK SOL (P1_16) ----- */
+	PORT_SetPinConfig(PORT1, 16U, &output_pin_config);
+
+	/* ----- SHIFT REVERSE SOL (P1_18) ----- */
+	PORT_SetPinConfig(PORT1, 18U, &output_pin_config);
+
+	/* ----- SHIFT NEUTRAL SOL (P1_19) ----- */
+	PORT_SetPinConfig(PORT1, 19U, &output_pin_config);
+
     /* ----- SHIFT SOL A (P4_4) ----- */
     PORT_SetPinConfig(PORT4, 4U, &output_pin_config);
 
@@ -204,6 +213,10 @@ void Init_Shifter_Output_Pins(void)
     GPIO_PinInit(GPIO1, 22U, &out_config);
     GPIO_PinInit(GPIO1, 17U, &out_config);
     GPIO_PinInit(GPIO1, 15U, &out_config);
+    GPIO_PinInit(GPIO1, 16U, &out_config);
+    GPIO_PinInit(GPIO1, 18U, &out_config);
+    GPIO_PinInit(GPIO1, 19U, &out_config);
+
 }
 
 void Set_Shift_Lock_Sol(void)
@@ -288,5 +301,56 @@ void Set_Shift_Sol_D(void)
     else
     {
         GPIO_PinWrite(GPIO1, 15U, 0);
+    }
+}
+
+void Set_Shift_Sol_PARKING(void)
+{
+    uint32 state = 0;
+
+    // Leer del RTE (salida lógica SOL_ClutchD)
+    Read_SOL_ClutchParking(&state);
+
+    if (state)
+    {
+        GPIO_PinWrite(GPIO1, 16U, 1);
+    }
+    else
+    {
+        GPIO_PinWrite(GPIO1, 16U, 0);
+    }
+}
+
+void Set_Shift_Sol_REVERSE(void)
+{
+    uint32 state = 0;
+
+    // Leer del RTE (salida lógica SOL_ClutchD)
+    Read_SOL_ClutchReverse(&state);
+
+    if (state)
+    {
+        GPIO_PinWrite(GPIO1, 18U, 1);
+    }
+    else
+    {
+        GPIO_PinWrite(GPIO1, 18U, 0);
+    }
+}
+
+void Set_Shift_Sol_NEUTRAL(void)
+{
+    uint32 state = 0;
+
+    // Leer del RTE (salida lógica SOL_ClutchD)
+    Read_SOL_ClutchNeutral(&state);
+
+    if (state)
+    {
+        GPIO_PinWrite(GPIO1, 19U, 1);
+    }
+    else
+    {
+        GPIO_PinWrite(GPIO1, 19U, 0);
     }
 }
