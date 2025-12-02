@@ -1,6 +1,8 @@
 
 #include "Rte_OS.h"
 #include "TCU_Final.h"
+#include "Comm_can.h"
+
 
 /* Task priorities. */
 #define Comm_Tx_Task_PRIORITY (configMAX_PRIORITIES - 1)
@@ -76,8 +78,8 @@ static void Comm_Rx_Task(void *pvParameters){
 	for (;;)
 	{
 
-		uint8 comm_rx=1;
-    	vTaskDelay(pdMS_TO_TICKS(100));
+		Can_Update();
+
 
 	}
 
@@ -89,27 +91,48 @@ static void TCM_logic_Task(void *pvParameters){
 	for (;;)
 	{
 		// CONEXIONES
-		//TCU_Final_U.Ignition =
-		Read_IO_Gear_Lever_Position( (uint32*)&TCU_Final_U.Gear_Level_Position);
-		Read_CAN_EngineRPM( (uint32*)&TCU_Final_U.Engine_RPM);
-		Read_CAN_VehicleSpeedRef( (uint32*)&TCU_Final_U.Vehicle_Speed_Reference);
-		Read_CAN_ThrottlePosition( (uint32*)&TCU_Final_U.Throttle_Position_Sensor);
+		TCU_Final_U.Ignition = 2;
+		uint32 GearLevel_Temp = 0;
+		Read_IO_Gear_Lever_Position( &GearLevel_Temp);
+		TCU_Final_U.Gear_Level_Position = (real_T)GearLevel_Temp;
+
+		uint32 RPM_Temp = 0;
+		Read_CAN_EngineRPM(&RPM_Temp);
+		TCU_Final_U.Engine_RPM = (real_T)RPM_Temp;
+
+		uint32 Speed_Temp = 0;
+		Read_CAN_VehicleSpeedRef( &Speed_Temp );
+		TCU_Final_U.Vehicle_Speed_Reference = (real_T)Speed_Temp;
+
+		uint32 Throttle_Temp = 0;
+		Read_CAN_ThrottlePosition( &Throttle_Temp);
+		TCU_Final_U.Throttle_Position_Sensor = (real_T)Throttle_Temp;
+
 		Read_IO_BrakeLightSwitch( (uint32*)&TCU_Final_U.Brake_Pedal_Switch);
 		Read_CAN_DriverModeSelection( (uint32*)&TCU_Final_U.Driver_Mode_Selection);
-		Read_TCM_FluidTemp_TFT( (uint32*)&TCU_Final_U.Transmission_Fluid_Temp);
-		Read_CAN_EngineTorqueActual( (uint32*)&TCU_Final_U.Engine_Torque_Actual);
-		Read_TCM_OutputSpeed_OSS( (uint32*)&TCU_Final_U.Output_Speed_Sensor);
 
-		Write_SOL_ShiftLock( TCU_Final_Y.Shift_Solenoid_Park);
-		//&TCU_Final_Y.Shift_Solenoid_Reverse);
-		//&TCU_Final_Y.Shift_Solenoid_Neutral);
+		sint32 Temp_Temp =0;
+		Read_TCM_FluidTemp_TFT( &Temp_Temp);
+		TCU_Final_U.Transmission_Fluid_Temp = (real_T)Temp_Temp;
+
+		sint32 Torque_Temp = 0;
+		Read_CAN_EngineTorqueActual( &Torque_Temp);
+		TCU_Final_U.Engine_Torque_Actual = (real_T)Torque_Temp;
+
+		uint32 OSS_Temp =0;
+		Read_TCM_OutputSpeed_OSS( &OSS_Temp);
+		TCU_Final_U.Output_Speed_Sensor = (real_T)OSS_Temp;
+
+		Write_SOL_ClutchParking( TCU_Final_Y.Shift_Solenoid_Park);
+		Write_SOL_ClutchReverse( TCU_Final_Y.Shift_Solenoid_Reverse);
+		Write_SOL_ClutchNeutral( TCU_Final_Y.Shift_Solenoid_Neutral);
 		Write_SOL_ClutchA( TCU_Final_Y.Shift_Solenoid_A);
 		Write_SOL_ClutchB( TCU_Final_Y.Shift_Solenoid_B);
 		Write_SOL_ClutchC( TCU_Final_Y.Shift_Solenoid_C);
 		Write_SOL_ClutchD( TCU_Final_Y.Shift_Solenoid_D);
 		Write_CAN_TorqueReductionRequest( TCU_Final_Y.Torque_Reduction_Request);
 		Write_PWM_LinePressure( TCU_Final_Y.Line_Pressure_Control_Solenoid);
-		Write_PWM_TCC( TCU_Final_Y.TCC_Control_Solenoid);
+		Write_PWM_TCC( (TCU_Final_Y.TCC_Control_Solenoid)*2);
 
 		TCU_Final_step();
 
@@ -126,7 +149,7 @@ static void TCM_task(void *pvParameters){
 	for (;;)
 	{
 
-		Init_All_Pins();
+
 		Update_Pin_Values();
 
     	vTaskDelay(pdMS_TO_TICKS(100));

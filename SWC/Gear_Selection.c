@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'TCU_Final'.
  *
- * Model version                  : 1.11
+ * Model version                  : 1.14
  * Simulink Coder version         : 25.2 (R2025b) 28-Jul-2025
- * C/C++ source code generated on : Wed Nov 26 16:44:55 2025
+ * C/C++ source code generated on : Mon Dec  1 11:27:07 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M
@@ -31,9 +31,8 @@
 #define TCU_Final_IN_Off               ((uint8_T)2U)
 #define TCU_Final_IN_Second            ((uint8_T)4U)
 #define TCU_Final_IN_Selection         ((uint8_T)3U)
-#define TCU_Final_IN_Shifting          ((uint8_T)5U)
-#define TCU_Final_IN_Sixth             ((uint8_T)6U)
-#define TCU_Final_IN_Third             ((uint8_T)7U)
+#define TCU_Final_IN_Sixth             ((uint8_T)5U)
+#define TCU_Final_IN_Third             ((uint8_T)6U)
 #define TCU_Final_IN_drive             ((uint8_T)1U)
 #define TCU_Final_IN_neutral           ((uint8_T)2U)
 #define TCU_Final_IN_parking           ((uint8_T)3U)
@@ -42,27 +41,29 @@
 #define TCU_Final_IN_segunda           ((uint8_T)6U)
 #define TCU_Final_IN_tercera           ((uint8_T)7U)
 
-static double fmax(double a, double b)
+double fmax(double a, double b)
 {
     return (a > b) ? a : b;
 }
 
-static double fmin(double a, double b)
+double fmin(double a, double b)
 {
     return (a < b) ? a : b;
 }
 
+
 /* Forward declaration for local functions */
 static real_T TCU_Final_UpdateDriveStyle(real_T Engine_RPM, real_T VehSpeed_kph,
   real_T Throttle_pct, DW_Gear_Selection_TCU_Final_T *localDW);
-static real_T TCU_Final_GearSelector(real_T Engine_RPM, real_T VehSpeed_kph,
-  real_T Throttle_pct, real_T Actual_Gear, real_T DriveMode, real_T DriveStyle);
-static void TCU_Final_Gear_Selection_i(real_T rtu_Engine_RPM, real_T
-  rtu_Vehicle_Speed_Reference, real_T rtu_Throttle_Position_Sensor, real_T
-  rtu_Driver_Mode_Selection, boolean_T *rty_Shift_Solenoid_A, boolean_T
-  *rty_Shift_Solenoid_B, boolean_T *rty_Shift_Solenoid_C, boolean_T
-  *rty_Shift_Solenoid_D, real_T *rty_Torque_Reduction_Request,
-  DW_Gear_Selection_TCU_Final_T *localDW);
+static void TCU_Final_GearShiftScheduler(real_T Engine_RPM, real_T VehSpeed_kph,
+  real_T Throttle_pct, real_T Actual_Gear, real_T DriveMode, real_T DriveStyle,
+  boolean_T *UpshiftReq, boolean_T *DownshiftReq);
+static void TCU_Final_Gear_Selection_i(real_T rtu_Gear_Lever_Position, real_T
+  rtu_Engine_RPM, real_T rtu_Vehicle_Speed_Reference, real_T
+  rtu_Throttle_Position_Sensor, real_T rtu_Driver_Mode_Selection, boolean_T
+  *rty_Shift_Solenoid_A, boolean_T *rty_Shift_Solenoid_B, boolean_T
+  *rty_Shift_Solenoid_C, boolean_T *rty_Shift_Solenoid_D, real_T
+  *rty_Torque_Reduction_Request, DW_Gear_Selection_TCU_Final_T *localDW);
 
 /* Function for Chart: '<S1>/Gear_Selection' */
 static real_T TCU_Final_UpdateDriveStyle(real_T Engine_RPM, real_T VehSpeed_kph,
@@ -104,23 +105,25 @@ real_T rt_roundd_snf(real_T u)
 }
 
 /* Function for Chart: '<S1>/Gear_Selection' */
-static real_T TCU_Final_GearSelector(real_T Engine_RPM, real_T VehSpeed_kph,
-  real_T Throttle_pct, real_T Actual_Gear, real_T DriveMode, real_T DriveStyle)
+static void TCU_Final_GearShiftScheduler(real_T Engine_RPM, real_T VehSpeed_kph,
+  real_T Throttle_pct, real_T Actual_Gear, real_T DriveMode, real_T DriveStyle,
+  boolean_T *UpshiftReq, boolean_T *DownshiftReq)
 {
-  real_T Objective_Gear;
   real_T downRpm;
   real_T styleFactor;
   real_T upRpm;
-  int32_T g;
   static const real_T c[3] = { 0.85, 1.0, 1.15 };
 
-  static const int16_T b[5] = { 2200, 2400, 2600, 2600, 2600 };
+  static const int16_T b[5] = { 2500, 2800, 3100, 3400, 3600 };
 
-  static const int8_T d[6] = { 0, 5, 15, 25, 35, 45 };
+  static const int8_T d[6] = { 0, 15, 35, 60, 90, 120 };
 
+  boolean_T guard1;
   Throttle_pct = fmax(0.0, fmin(100.0, Throttle_pct));
   DriveMode = fmax(0.0, fmin(2.0, DriveMode));
   Actual_Gear = fmax(1.0, fmin(6.0, rt_roundd_snf(Actual_Gear)));
+  *UpshiftReq = false;
+  *DownshiftReq = false;
   styleFactor = 0.2 * fmax(-1.0, fmin(1.0, DriveStyle)) + 1.0;
   upRpm = (rtInf);
   downRpm = (rtMinusInf);
@@ -130,177 +133,171 @@ static real_T TCU_Final_GearSelector(real_T Engine_RPM, real_T VehSpeed_kph,
   }
 
   if (Actual_Gear > 1.0) {
-    downRpm = (((Actual_Gear - 1.0) - 1.0) * 100.0 + 1200.0) * c[(int32_T)
+    downRpm = (((Actual_Gear - 1.0) - 1.0) * 200.0 + 1500.0) * c[(int32_T)
       (DriveMode + 1.0) - 1] * styleFactor + 2.0 * Throttle_pct;
   }
 
-  Objective_Gear = Actual_Gear;
   if (VehSpeed_kph < 3.0) {
-    Objective_Gear = 1.0;
+    *DownshiftReq = (Actual_Gear > 1.0);
   } else {
+    guard1 = false;
     if ((Throttle_pct > 90.0) && (Engine_RPM < 3500.0)) {
-      if (Actual_Gear > 2.0) {
-        Objective_Gear = Actual_Gear - 2.0;
-      } else if (Actual_Gear > 1.0) {
-        Objective_Gear = 1.0;
-      }
-    } else if ((Throttle_pct > 75.0) && (Engine_RPM < 4000.0)) {
       if (Actual_Gear > 1.0) {
-        Objective_Gear = Actual_Gear - 1.0;
+        *DownshiftReq = true;
+      } else {
+        guard1 = true;
       }
+    } else if ((Throttle_pct > 75.0) && (Engine_RPM < 4000.0) && (Actual_Gear >
+                1.0)) {
+      *DownshiftReq = true;
     } else {
-      if ((Engine_RPM < downRpm) && (Actual_Gear > 1.0)) {
-        Objective_Gear = Actual_Gear - 1.0;
-      }
-
-      if ((Objective_Gear == Actual_Gear) && (Engine_RPM > upRpm) &&
-          (Actual_Gear < 6.0) && (VehSpeed_kph >= d[(int32_T)Actual_Gear])) {
-        Objective_Gear = Actual_Gear + 1.0;
-      }
+      guard1 = true;
     }
 
-    if (VehSpeed_kph < d[(int32_T)Objective_Gear - 1]) {
-      Objective_Gear = 1.0;
-      g = 0;
-      while ((g < 6) && (VehSpeed_kph >= d[g])) {
-        Objective_Gear = (real_T)g + 1.0;
-        g++;
+    if (guard1) {
+      if ((Engine_RPM < downRpm) && (Actual_Gear > 1.0)) {
+        *DownshiftReq = true;
+      } else if ((Engine_RPM > upRpm) && (Actual_Gear < 6.0)) {
+        *UpshiftReq = (VehSpeed_kph >= d[(int32_T)Actual_Gear]);
       }
     }
   }
-
-  return Objective_Gear;
 }
 
 /* Function for Chart: '<S1>/Gear_Selection' */
-static void TCU_Final_Gear_Selection_i(real_T rtu_Engine_RPM, real_T
-  rtu_Vehicle_Speed_Reference, real_T rtu_Throttle_Position_Sensor, real_T
-  rtu_Driver_Mode_Selection, boolean_T *rty_Shift_Solenoid_A, boolean_T
-  *rty_Shift_Solenoid_B, boolean_T *rty_Shift_Solenoid_C, boolean_T
-  *rty_Shift_Solenoid_D, real_T *rty_Torque_Reduction_Request,
-  DW_Gear_Selection_TCU_Final_T *localDW)
+static void TCU_Final_Gear_Selection_i(real_T rtu_Gear_Lever_Position, real_T
+  rtu_Engine_RPM, real_T rtu_Vehicle_Speed_Reference, real_T
+  rtu_Throttle_Position_Sensor, real_T rtu_Driver_Mode_Selection, boolean_T
+  *rty_Shift_Solenoid_A, boolean_T *rty_Shift_Solenoid_B, boolean_T
+  *rty_Shift_Solenoid_C, boolean_T *rty_Shift_Solenoid_D, real_T
+  *rty_Torque_Reduction_Request, DW_Gear_Selection_TCU_Final_T *localDW)
 {
   real_T DriveStyle;
-  if (localDW->D == 0.0) {
+  boolean_T DownshiftReq;
+  boolean_T UpshiftReq;
+  if (rtu_Gear_Lever_Position <= 3.0) {
     localDW->is_Gear_Selection = TCU_Final_IN_NO_ACTIVE_CHILD;
     localDW->is_c1_TCU_GS = TCU_Final_IN_Selection;
     localDW->is_Selection = TCU_Final_IN_parking;
+    localDW->D = 0.0;
   } else {
     DriveStyle = TCU_Final_UpdateDriveStyle(rtu_Engine_RPM,
       rtu_Vehicle_Speed_Reference, rtu_Throttle_Position_Sensor, localDW);
-    DriveStyle = TCU_Final_GearSelector(rtu_Engine_RPM,
-      rtu_Vehicle_Speed_Reference, rtu_Throttle_Position_Sensor,
-      localDW->Current_Gear_State, rtu_Driver_Mode_Selection, DriveStyle);
+    TCU_Final_GearShiftScheduler(rtu_Engine_RPM, rtu_Vehicle_Speed_Reference,
+      rtu_Throttle_Position_Sensor, localDW->Current_Gear_State,
+      rtu_Driver_Mode_Selection, DriveStyle, &UpshiftReq, &DownshiftReq);
     switch (localDW->is_Gear_Selection) {
      case TCU_Final_IN_Fifth:
-      DriveStyle -= localDW->Current_Gear_State;
-      if ((DriveStyle > 0.0) || (DriveStyle < 0.0)) {
-        localDW->temporalCounter_i1 = 0U;
-        localDW->is_Gear_Selection = TCU_Final_IN_Shifting;
+      if (UpshiftReq && (localDW->Current_Gear_State == 5.0)) {
         *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Sixth;
+        localDW->Current_Gear_State = 6.0;
+      } else if (DownshiftReq && (localDW->Current_Gear_State == 5.0)) {
+        *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Fourth;
+        localDW->Current_Gear_State = 4.0;
       } else {
         *rty_Shift_Solenoid_A = false;
         *rty_Shift_Solenoid_B = false;
         *rty_Shift_Solenoid_C = true;
         *rty_Shift_Solenoid_D = true;
+        *rty_Torque_Reduction_Request = 0.0;
       }
       break;
 
      case TCU_Final_IN_First:
-      if (DriveStyle - localDW->Current_Gear_State > 0.0) {
-        localDW->temporalCounter_i1 = 0U;
-        localDW->is_Gear_Selection = TCU_Final_IN_Shifting;
+      if (UpshiftReq && (localDW->Current_Gear_State == 1.0) &&
+          (rtu_Gear_Lever_Position != 5.0)) {
         *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Second;
+        localDW->Current_Gear_State = 2.0;
       } else {
         *rty_Shift_Solenoid_A = true;
         *rty_Shift_Solenoid_B = false;
         *rty_Shift_Solenoid_C = false;
         *rty_Shift_Solenoid_D = false;
+        *rty_Torque_Reduction_Request = 0.0;
       }
       break;
 
      case TCU_Final_IN_Fourth:
-      DriveStyle -= localDW->Current_Gear_State;
-      if ((DriveStyle > 0.0) || (DriveStyle < 0.0)) {
-        localDW->temporalCounter_i1 = 0U;
-        localDW->is_Gear_Selection = TCU_Final_IN_Shifting;
+      if (UpshiftReq && (localDW->Current_Gear_State == 4.0)) {
         *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Fifth;
+        localDW->Current_Gear_State = 5.0;
+      } else if (DownshiftReq && (localDW->Current_Gear_State == 4.0)) {
+        *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Third;
+        localDW->Current_Gear_State = 3.0;
       } else {
         *rty_Shift_Solenoid_A = false;
         *rty_Shift_Solenoid_B = true;
         *rty_Shift_Solenoid_C = true;
         *rty_Shift_Solenoid_D = false;
+        *rty_Torque_Reduction_Request = 0.0;
       }
       break;
 
      case TCU_Final_IN_Second:
-      DriveStyle -= localDW->Current_Gear_State;
-      if ((DriveStyle < 0.0) || (DriveStyle > 0.0)) {
-        localDW->temporalCounter_i1 = 0U;
-        localDW->is_Gear_Selection = TCU_Final_IN_Shifting;
+      if (UpshiftReq && (localDW->Current_Gear_State == 2.0) &&
+          (rtu_Gear_Lever_Position != 6.0)) {
         *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Third;
+        localDW->Current_Gear_State = 3.0;
+      } else if (DownshiftReq && (localDW->Current_Gear_State == 2.0)) {
+        *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_First;
+        localDW->Current_Gear_State = 1.0;
       } else {
         *rty_Shift_Solenoid_A = true;
         *rty_Shift_Solenoid_B = true;
         *rty_Shift_Solenoid_C = false;
         *rty_Shift_Solenoid_D = false;
-      }
-      break;
-
-     case TCU_Final_IN_Shifting:
-      if ((DriveStyle == 1.0) && (*rty_Torque_Reduction_Request == 0.0)) {
-        localDW->is_Gear_Selection = TCU_Final_IN_First;
-        localDW->Current_Gear_State = 1.0;
-      } else if ((DriveStyle == 2.0) && (*rty_Torque_Reduction_Request == 0.0))
-      {
-        localDW->is_Gear_Selection = TCU_Final_IN_Second;
-        localDW->Current_Gear_State = 2.0;
-      } else if ((DriveStyle == 3.0) && (*rty_Torque_Reduction_Request == 0.0))
-      {
-        localDW->is_Gear_Selection = TCU_Final_IN_Third;
-        localDW->Current_Gear_State = 3.0;
-      } else if ((DriveStyle == 4.0) && (*rty_Torque_Reduction_Request == 0.0))
-      {
-        localDW->is_Gear_Selection = TCU_Final_IN_Fourth;
-        localDW->Current_Gear_State = 4.0;
-      } else if ((DriveStyle == 5.0) && (*rty_Torque_Reduction_Request == 0.0))
-      {
-        localDW->is_Gear_Selection = TCU_Final_IN_Fifth;
-        localDW->Current_Gear_State = 5.0;
-      } else if ((DriveStyle == 6.0) && (*rty_Torque_Reduction_Request == 0.0))
-      {
-        localDW->is_Gear_Selection = TCU_Final_IN_Sixth;
-        localDW->Current_Gear_State = 6.0;
-      } else {
         *rty_Torque_Reduction_Request = 0.0;
       }
       break;
 
      case TCU_Final_IN_Sixth:
-      if (DriveStyle - localDW->Current_Gear_State < 0.0) {
-        localDW->temporalCounter_i1 = 0U;
-        localDW->is_Gear_Selection = TCU_Final_IN_Shifting;
+      if (DownshiftReq && (localDW->Current_Gear_State == 6.0)) {
         *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Fifth;
+        localDW->Current_Gear_State = 5.0;
       } else {
         *rty_Shift_Solenoid_A = false;
         *rty_Shift_Solenoid_B = false;
         *rty_Shift_Solenoid_C = false;
         *rty_Shift_Solenoid_D = true;
+        *rty_Torque_Reduction_Request = 0.0;
       }
       break;
 
      default:
       /* case IN_Third: */
-      DriveStyle -= localDW->Current_Gear_State;
-      if ((DriveStyle > 0.0) || (DriveStyle < 0.0)) {
-        localDW->temporalCounter_i1 = 0U;
-        localDW->is_Gear_Selection = TCU_Final_IN_Shifting;
+      if (UpshiftReq && (localDW->Current_Gear_State == 3.0) &&
+          (rtu_Gear_Lever_Position != 7.0)) {
         *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Fourth;
+        localDW->Current_Gear_State = 4.0;
+      } else if (DownshiftReq && (localDW->Current_Gear_State == 3.0)) {
+        *rty_Torque_Reduction_Request = 1.0;
+        localDW->temporalCounter_i1 = 0U;
+        localDW->is_Gear_Selection = TCU_Final_IN_Second;
+        localDW->Current_Gear_State = 2.0;
       } else {
         *rty_Shift_Solenoid_A = true;
         *rty_Shift_Solenoid_B = true;
         *rty_Shift_Solenoid_C = true;
         *rty_Shift_Solenoid_D = false;
+        *rty_Torque_Reduction_Request = 0.0;
       }
       break;
     }
@@ -335,7 +332,7 @@ void TCU_Final_Gear_Selection(real_T rtu_Ignition, real_T
   *rty_Shift_Solenoid_D, real_T *rty_Torque_Reduction_Request,
   DW_Gear_Selection_TCU_Final_T *localDW)
 {
-  if (localDW->temporalCounter_i1 < 7) {
+  if (localDW->temporalCounter_i1 < 31) {
     localDW->temporalCounter_i1++;
   }
 
@@ -346,16 +343,18 @@ void TCU_Final_Gear_Selection(real_T rtu_Ignition, real_T
   } else {
     switch (localDW->is_c1_TCU_GS) {
      case TCU_Final_IN_Gear_Selection:
-      TCU_Final_Gear_Selection_i(rtu_Engine_RPM, rtu_Vehicle_Speed_Reference,
-        rtu_Throttle_Position_Sensor, rtu_Driver_Mode_Selection,
-        rty_Shift_Solenoid_A, rty_Shift_Solenoid_B, rty_Shift_Solenoid_C,
-        rty_Shift_Solenoid_D, rty_Torque_Reduction_Request, localDW);
+      TCU_Final_Gear_Selection_i(rtu_Gear_Lever_Position, rtu_Engine_RPM,
+        rtu_Vehicle_Speed_Reference, rtu_Throttle_Position_Sensor,
+        rtu_Driver_Mode_Selection, rty_Shift_Solenoid_A, rty_Shift_Solenoid_B,
+        rty_Shift_Solenoid_C, rty_Shift_Solenoid_D, rty_Torque_Reduction_Request,
+        localDW);
       break;
 
      case TCU_Final_IN_Off:
       if (rtu_Ignition == 2.0) {
         localDW->is_c1_TCU_GS = TCU_Final_IN_Selection;
         localDW->is_Selection = TCU_Final_IN_parking;
+        localDW->D = 0.0;
       }
       break;
 
@@ -364,9 +363,10 @@ void TCU_Final_Gear_Selection(real_T rtu_Ignition, real_T
       if (rtu_Ignition == 0.0) {
         localDW->is_Selection = TCU_Final_IN_NO_ACTIVE_CHILD;
         localDW->is_c1_TCU_GS = TCU_Final_IN_Off;
-      } else if (localDW->D == 1.0) {
+      } else if (localDW->D >= 1.0) {
         localDW->is_Selection = TCU_Final_IN_NO_ACTIVE_CHILD;
         localDW->is_c1_TCU_GS = TCU_Final_IN_Gear_Selection;
+        localDW->temporalCounter_i1 = 0U;
         localDW->is_Gear_Selection = TCU_Final_IN_First;
         localDW->Current_Gear_State = 1.0;
       } else {
@@ -376,6 +376,7 @@ void TCU_Final_Gear_Selection(real_T rtu_Ignition, real_T
             localDW->is_Selection = TCU_Final_IN_primera;
           } else if (rtu_Gear_Lever_Position == 3.0) {
             localDW->is_Selection = TCU_Final_IN_neutral;
+            localDW->D = 0.0;
           } else {
             *rty_Shift_Solenoid_Park = false;
             *rty_Shift_Solenoid_Reverse = false;
@@ -389,22 +390,30 @@ void TCU_Final_Gear_Selection(real_T rtu_Ignition, real_T
             localDW->is_Selection = TCU_Final_IN_drive;
           } else if (rtu_Gear_Lever_Position == 2.0) {
             localDW->is_Selection = TCU_Final_IN_reverse;
+            localDW->D = 0.0;
           } else {
             *rty_Shift_Solenoid_Park = false;
             *rty_Shift_Solenoid_Reverse = false;
             *rty_Shift_Solenoid_Neutral = true;
-            localDW->D = 0.0;
+            *rty_Shift_Solenoid_A = false;
+            *rty_Shift_Solenoid_B = false;
+            *rty_Shift_Solenoid_C = false;
+            *rty_Shift_Solenoid_D = false;
           }
           break;
 
          case TCU_Final_IN_parking:
-          if ((rtu_Gear_Lever_Position == 2.0) && rtu_Brake_Pedal_Switch) {
+          if ((rtu_Gear_Lever_Position >= 2.0) && rtu_Brake_Pedal_Switch) {
             localDW->is_Selection = TCU_Final_IN_reverse;
+            localDW->D = 0.0;
           } else {
             *rty_Shift_Solenoid_Park = true;
             *rty_Shift_Solenoid_Reverse = false;
             *rty_Shift_Solenoid_Neutral = false;
-            localDW->D = 0.0;
+            *rty_Shift_Solenoid_A = false;
+            *rty_Shift_Solenoid_B = false;
+            *rty_Shift_Solenoid_C = false;
+            *rty_Shift_Solenoid_D = false;
           }
           break;
 
@@ -424,14 +433,19 @@ void TCU_Final_Gear_Selection(real_T rtu_Ignition, real_T
          case TCU_Final_IN_reverse:
           if (rtu_Gear_Lever_Position == 3.0) {
             localDW->is_Selection = TCU_Final_IN_neutral;
+            localDW->D = 0.0;
           } else if ((rtu_Gear_Lever_Position == 1.0) && rtu_Brake_Pedal_Switch)
           {
             localDW->is_Selection = TCU_Final_IN_parking;
+            localDW->D = 0.0;
           } else {
             *rty_Shift_Solenoid_Park = false;
             *rty_Shift_Solenoid_Reverse = true;
             *rty_Shift_Solenoid_Neutral = false;
-            localDW->D = 0.0;
+            *rty_Shift_Solenoid_A = false;
+            *rty_Shift_Solenoid_B = false;
+            *rty_Shift_Solenoid_C = false;
+            *rty_Shift_Solenoid_D = false;
           }
           break;
 

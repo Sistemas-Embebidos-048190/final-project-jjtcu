@@ -12,7 +12,7 @@ static void PWM_SOl_Init(void)
     uint16_t deadTimeVal;
     pwm_signal_param_t pwmSignal[2];
     uint32_t pwmSourceClockInHz;
-    uint32_t pwmFrequencyInHz = APP_DEFAULT_PWM_FREQUENCY;
+    uint32_t pwmFrequencyInHz = 50u;
 
     pwmSourceClockInHz = PWM_SRC_CLK_FREQ;
 
@@ -35,18 +35,18 @@ static void PWM_SOl_Init(void)
     pwmSignal[1].pwmchannelenable = true;
 
     /*********** PWMA_SM0 - phase A, configuration, setup 2 channel as an example ************/
-    PWM_SetupPwm(BOARD_PWM_BASEADDR, kPWM_Module_0, pwmSignal, 2, kPWM_SignedCenterAligned, pwmFrequencyInHz,
+    PWM_SetupPwm(BOARD_PWM_BASEADDR, kPWM_Module_0, pwmSignal, 2, kPWM_EdgeAligned, pwmFrequencyInHz,
                  pwmSourceClockInHz);
 
     /*********** PWMA_SM1 - phase B configuration, setup PWM A channel only ************/
 
 
-    PWM_SetupPwm(BOARD_PWM_BASEADDR, kPWM_Module_1, pwmSignal, 1, kPWM_SignedCenterAligned, pwmFrequencyInHz,
+    PWM_SetupPwm(BOARD_PWM_BASEADDR, kPWM_Module_1, pwmSignal, 1, kPWM_EdgeAligned, pwmFrequencyInHz,
                  pwmSourceClockInHz);
 
     /*********** PWMA_SM2 - phase C configuration, setup PWM A channel only ************/
 
-    PWM_SetupPwm(BOARD_PWM_BASEADDR, kPWM_Module_2, pwmSignal, 1, kPWM_SignedCenterAligned, pwmFrequencyInHz,
+    PWM_SetupPwm(BOARD_PWM_BASEADDR, kPWM_Module_2, pwmSignal, 1, kPWM_EdgeAligned, pwmFrequencyInHz,
                  pwmSourceClockInHz);
 }
 
@@ -62,6 +62,7 @@ void Pin_init_PWM(void){
 
 	    PWM_GetDefaultConfig(&pwmConfig);
 
+	    	pwmConfig.prescale = kPWM_Prescale_Divide_128;
 
 	        /* Use full cycle reload */
 	        pwmConfig.reloadLogic = kPWM_ReloadPwmFullCycle;
@@ -78,7 +79,7 @@ void Pin_init_PWM(void){
 
 	        /* Initialize submodule 1, make it use same counter clock as submodule 0. */
 	        pwmConfig.clockSource           = kPWM_Submodule0Clock;
-	        pwmConfig.prescale              = kPWM_Prescale_Divide_1;
+	        pwmConfig.prescale              = kPWM_Prescale_Divide_128;
 	        pwmConfig.initializationControl = kPWM_Initialize_MasterSync;
 	        if (PWM_Init(BOARD_PWM_BASEADDR, kPWM_Module_1, &pwmConfig) == kStatus_Fail)
 	        {
@@ -188,12 +189,13 @@ void PWM_InitPins(void)
 }
 void LinePressure_SetDuty(void)
 {
-    uint32 duty = 0;
+	float duty_temp = 0;
 
-    Read_PWM_LinePressure(&duty);
-    if (duty > 100) duty = 100;
+    Read_PWM_LinePressure(&duty_temp);
 
-    PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmA, kPWM_SignedCenterAligned, duty); // Line
+    float duty = 4.5f + (duty_temp * 0.075f);
+
+    PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmA, kPWM_EdgeAligned, duty); // Line
 
 
     PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
@@ -201,12 +203,13 @@ void LinePressure_SetDuty(void)
 
 void TCCPressure_SetDuty(void)
 {
-    uint32 duty = 0;
+	float duty_temp = 0;
 
-    Read_PWM_TCC(&duty);
-    if (duty > 100) duty = 100;
+    Read_PWM_TCC(&duty_temp);
 
-    PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmB, kPWM_SignedCenterAligned, duty); // TCC
+    float duty = 4.5f + (duty_temp * 0.075f);
+
+    PWM_UpdatePwmDutycycle(BOARD_PWM_BASEADDR, kPWM_Module_0, kPWM_PwmB, kPWM_EdgeAligned, duty); // TCC
 
 
     PWM_SetPwmLdok(BOARD_PWM_BASEADDR, kPWM_Control_Module_0 | kPWM_Control_Module_1 | kPWM_Control_Module_2, true);
