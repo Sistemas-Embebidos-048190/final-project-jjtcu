@@ -101,12 +101,12 @@ void Read_CAN_SelectedGear(uint32 *value)
 // ============================================================================
 // SOLENOID CONTROL OUTPUTS (PWM / DIGITAL)
 // ============================================================================
-void Read_PWM_LinePressure(uint32 *value)
+void Read_PWM_LinePressure(float *value)
 {
     Get_PWM_LinePressure(value);
 }
 
-void Read_PWM_TCC(uint32 *value)
+void Read_PWM_TCC(float *value)
 {
     Get_PWM_TCC(value);
 }

@@ -58,8 +58,8 @@ uint32  g_CAN_SelectedGear;            // Marcha mostrada en cluster (P,R,N,D,1-
 // =====================
 // SOLENOID CONTROL OUTPUTS (PWM / DIGITAL)
 // =====================
-uint32 g_PWM_LinePressure;           // Solenoide presión de línea
-uint32 g_PWM_TCC;                    // Solenoide Torque Converter Clutch (TCC)
+float g_PWM_LinePressure;           // Solenoide presión de línea
+float g_PWM_TCC;                    // Solenoide Torque Converter Clutch (TCC)
 uint32 g_SOL_ClutchParking;
 uint32 g_SOL_ClutchNeutral;
 uint32 g_SOL_ClutchReverse;

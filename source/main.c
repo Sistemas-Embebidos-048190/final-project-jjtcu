@@ -42,13 +42,26 @@ int main(void)
 	BOARD_InitHardware();
 
 
-
-
+	Init_All_Pins();
+//	Pin_init_PWM();
 	Rte_Init_Task();
 	while(1){
-
-
-
+//		g_PWM_LinePressure = 4.5;
+//		g_PWM_TCC = 4.5;
+//		LinePressure_SetDuty();
+//		TCCPressure_SetDuty();
+//		g_PWM_LinePressure = 5;
+//		g_PWM_TCC = 5;
+//		LinePressure_SetDuty();
+//		TCCPressure_SetDuty();
+//		g_PWM_LinePressure = 12;
+//		g_PWM_TCC = 12;
+//		LinePressure_SetDuty();
+//		TCCPressure_SetDuty();
+//		g_PWM_LinePressure = 12.5;
+//		g_PWM_TCC = 12.5;
+//		LinePressure_SetDuty();
+//		TCCPressure_SetDuty();
 	}
 
 }
