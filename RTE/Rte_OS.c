@@ -2,6 +2,7 @@
 #include "Rte_OS.h"
 #include "TCU_Final.h"
 #include "Comm_can.h"
+#include "IoHwAb_pwm.h"
 
 
 /* Task priorities. */
@@ -68,7 +69,7 @@ static void Comm_Tx_Task(void *pvParameters)
     for (;;)
     {
 
-
+    	LinePressure_SetDuty();
     	vTaskDelay(pdMS_TO_TICKS(100));
 
     }
