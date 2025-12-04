@@ -21,53 +21,66 @@ TCU_Input_Signals_t current_inputs;
 // Paso 6-20: Aceleración (Cambio de marcha simulado en el paso 13)
 // Paso 21-24: Soltar acelerador (Coasting)
 
-const uint16_t DATA_ENGINE_RPM[SCENARIO_STEPS] = { 
-    800, 800, 800, 800, 800,              // Idle
-    850, 1200, 1500, 1800, 2200, 2500,    // Acelerando en 1ra
-    2800, 3000,                           // Punto de cambio
-    1800, 1900, 2100, 2300, 2500, 2700,   // Cayó RPM (entró 2da) y sigue subiendo
-    2800, 2000, 1500, 1200, 1000, 800     // Soltó acelerador
+const uint16_t DATA_ENGINE_RPM[SCENARIO_STEPS] = {
+    800, 800, 800, 800, 800, 900, 950, 1500, 1833, 2167,
+    2500, 2500, 1500, 1700, 2067, 2433, 2800, 2800, 1700, 1900,
+    2300, 2700, 3100, 3100, 1900, 2100, 2533, 2967, 3400, 3400,
+    2100, 2300, 2767, 3233, 3700, 3700, 2300, 2500, 3000, 3500,
+    4000, 4000, 2500, 2500, 2442, 2383, 2325, 2267, 2208, 2150,
+    2092, 2033, 1975, 1917, 1858, 1800, 1800, 1723, 1646, 1569,
+    1492, 1415, 1338, 1262, 1185, 1108, 1031, 954, 877, 800
 };
 
 const uint8_t DATA_THROTTLE[SCENARIO_STEPS] = {
-    0, 0, 0, 0, 0,                        // Sin pie en acelerador
-    10, 20, 30, 35, 35, 40,               // Pisando acelerador
-    40, 40,                               // Manteniendo
-    45, 45, 50, 50, 50, 50,               // Acelerando más
-    50, 0, 0, 0, 0, 0                     // Soltó de golpe
+    0, 0, 0, 0, 0, 5, 10, 25, 25, 25,
+    25, 30, 30, 30, 30, 30, 30, 35, 35, 35,
+    35, 35, 35, 40, 40, 40, 40, 40, 40, 45,
+    45, 45, 45, 45, 45, 50, 50, 50, 50, 50,
+    50, 55, 55, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 const uint8_t DATA_VEHICLE_SPEED[SCENARIO_STEPS] = {
-    0, 0, 0, 0, 0,                        // Quieto
-    0, 2, 5, 10, 15, 20,                  // Ganando velocidad
-    25, 30,                               // Momento del cambio (30kph)
-    32, 35, 40, 45, 50, 55,               // Sigue ganando velocidad en 2da
-    58, 57, 55, 53, 50, 48                // Desacelerando por fricción
+    0, 0, 0, 0, 0, 0, 0, 0, 3, 6,
+    9, 12, 15, 15, 19, 23, 27, 31, 35, 35,
+    40, 45, 50, 55, 60, 60, 66, 72, 78, 84,
+    90, 90, 98, 106, 114, 122, 130, 130, 140, 150,
+    160, 170, 180, 180, 177, 173, 170, 167, 163, 160,
+    157, 153, 150, 147, 143, 140, 140, 129, 118, 108,
+    97, 86, 75, 65, 54, 43, 32, 22, 11, 0
 };
 
 const int16_t DATA_TORQUE[SCENARIO_STEPS] = {
-    10, 10, 10, 10, 10,                   // Torque base idle
-    50, 100, 150, 180, 190, 200,          // Torque sube con carga
-    150, 100,                             // Torque baja momentáneamente en el cambio (Torque reduction request)
-    180, 190, 200, 210, 210, 210,         // Torque vuelve
-    210, -10, -20, -25, -30, -30          // Torque negativo (Freno de motor)
+    10, 10, 10, 10, 10, 30, 40, 80, 80, 80,
+    80, 100, 50, 100, 100, 100, 100, 120, 70, 120,
+    120, 120, 120, 140, 90, 140, 140, 140, 140, 160,
+    110, 160, 160, 160, 160, 180, 130, 180, 180, 180,
+    180, 200, 150, -5, -6, -8, -9, -10, -11, -12,
+    -14, -15, -16, -18, -19, -20, -20, -23, -26, -29,
+    -32, -35, -38, -42, -45, -48, -51, -54, -57, -60
 };
 
 const GearLeverPos_t DATA_GEAR_LEVER[SCENARIO_STEPS] = {
-    GEAR_POS_P, GEAR_POS_P, GEAR_POS_P,       // Parking
-    GEAR_POS_N, GEAR_POS_D,                   // Pasa a Neutro, luego Drive
-    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
-    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
-    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
-    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D
+    GEAR_POS_P, GEAR_POS_P, GEAR_POS_P, GEAR_POS_P, GEAR_POS_N, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
+    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
+    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
+    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
+    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
+    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D,
+    GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D, GEAR_POS_D
 };
 
 const bool DATA_BRAKE_SW[SCENARIO_STEPS] = {
-    1, 1, 1,                              // Freno pisado para mover palanca
-    0, 0,                                 // Suelta freno
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,      // Manejando
-    0, 0, 0, 0, 0, 0, 0, 0, 0             // Sigue sin frenar (coasting)
+    1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
+
 
 
 // =========================================================
