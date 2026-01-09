@@ -14,7 +14,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define SCENARIO_STEPS 25
+#define SCENARIO_STEPS 70
 //Estructura que representa todas las entradas que el Microcontrolador recibe
 // (Tanto las que vendrían por CAN como las Hardwired simuladas)
 // Enum para Gear Lever Position (0-7)

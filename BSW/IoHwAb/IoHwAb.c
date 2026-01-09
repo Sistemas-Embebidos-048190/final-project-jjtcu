@@ -37,8 +37,9 @@ void Update_Pin_Values(void){
 
 	//PWM
 	//SET
-	LinePressure_SetDuty();
 	TCCPressure_SetDuty();
+	LinePressure_SetDuty();
+
 
 
 }
