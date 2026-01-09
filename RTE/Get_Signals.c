@@ -49,8 +49,8 @@ void Get_CAN_SelectedGear(uint32 *value) { *value = g_CAN_SelectedGear; }
 // ============================================================================
 // SOLENOID CONTROL OUTPUTS (PWM / DIGITAL)
 // ============================================================================
-void Get_PWM_LinePressure(uint32 *value) { *value = g_PWM_LinePressure; }
-void Get_PWM_TCC(uint32 *value) { *value = g_PWM_TCC; }
+void Get_PWM_LinePressure(float *value) { *value = g_PWM_LinePressure; }
+void Get_PWM_TCC(float *value) { *value = g_PWM_TCC; }
 
 void Get_SOL_ClutchParking(uint32 *value){ *value = g_SOL_ClutchParking; }
 void Get_SOL_ClutchReverse(uint32 *value){ *value = g_SOL_ClutchReverse; }

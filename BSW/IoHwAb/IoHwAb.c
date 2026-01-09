@@ -21,10 +21,13 @@ void Update_Pin_Values(void){
 
 	// SET
 	Set_Shift_Lock_Sol();
-	Set_Shift_Sol_A;
-	Set_Shift_Sol_B;
-	Set_Shift_Sol_C;
-	Set_Shift_Sol_D;
+	Set_Shift_Sol_A();
+	Set_Shift_Sol_B();
+	Set_Shift_Sol_C();
+	Set_Shift_Sol_D();
+	Set_Shift_Sol_PARKING();
+	Set_Shift_Sol_REVERSE();
+	Set_Shift_Sol_NEUTRAL();
 
 	// ADC
 	// GET
@@ -34,8 +37,9 @@ void Update_Pin_Values(void){
 
 	//PWM
 	//SET
-	LinePressure_SetDuty();
 	TCCPressure_SetDuty();
+	LinePressure_SetDuty();
+
 
 
 }

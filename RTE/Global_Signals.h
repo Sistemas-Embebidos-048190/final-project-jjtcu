@@ -6,7 +6,7 @@
 
 typedef enum
 {
-    GEAR_PARKING = 1,  // 0
+    GEAR_PARKING = 1U,  // 0
     GEAR_REVERSE,      // 1
     GEAR_NEUTRAL,      // 2
     GEAR_DRIVE,        // 3
@@ -61,8 +61,8 @@ extern uint32  g_CAN_SelectedGear;             // Marcha mostrada en cluster (P,
 // =====================
 // SOLENOID CONTROL OUTPUTS (PWM / DIGITAL)
 // =====================
-extern uint32 g_PWM_LinePressure;             // Solenoide presión de línea
-extern uint32 g_PWM_TCC;                      // Solenoide Torque Converter Clutch (TCC)
+extern float g_PWM_LinePressure;             // Solenoide presión de línea
+extern float g_PWM_TCC;                      // Solenoide Torque Converter Clutch (TCC)
 extern uint32 g_SOL_ClutchParking;
 extern uint32 g_SOL_ClutchNeutral;
 extern uint32 g_SOL_ClutchReverse;

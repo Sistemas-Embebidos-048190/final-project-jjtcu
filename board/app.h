@@ -17,7 +17,7 @@
 #define BOARD_PWM_BASEADDR        PWM1
 #define PWM_SRC_CLK_FREQ          CLOCK_GetFreq(kCLOCK_BusClk)
 #define DEMO_PWM_FAULT_LEVEL      true
-#define APP_DEFAULT_PWM_FREQUENCY (10000UL)
+#define APP_DEFAULT_PWM_FREQUENCY (100000UL)
 /*${macro:end}*/
 
 /*******************************************************************************

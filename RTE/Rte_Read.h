@@ -39,8 +39,8 @@ void Read_CAN_TorqueReductionRequest(uint32 *value);
 void Read_CAN_SelectedGear(uint32 *value);
 
 // SOLENOID CONTROL OUTPUTS (PWM / DIGITAL)
-void Read_PWM_LinePressure(uint32 *value);
-void Read_PWM_TCC(uint32 *value);
+void Read_PWM_LinePressure(float *value);
+void Read_PWM_TCC(float *value);
 
 void Read_SOL_ClutchParking(uint32 *value);
 void Read_SOL_ClutchReverse(uint32 *value);
